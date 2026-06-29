@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/MozcInput.Protocol/MozcInput.Protocol.csproj" />
+    <Project Path="src/MozcInput/MozcInput.csproj" />
+  </Folder>
+  <Folder Name="/tools/">
+    <Project Path="tools/MozcInput.Bridge/MozcInput.Bridge.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/MozcInput.Tests/MozcInput.Tests.csproj" />
+  </Folder>
+</Solution>

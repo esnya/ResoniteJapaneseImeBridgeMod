@@ -1,0 +1,170 @@
+<Project>
+  <PropertyGroup>
+    <Authors>esnya</Authors>
+    <Company>esnya</Company>
+    <Copyright>Copyright (c) 2026 $(Authors)</Copyright>
+    <Description>A ResoniteModLoader mod that routes VR text input through a local Mozc-compatible bridge.</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>Resonite;Mod;ResoniteModLoader;Mozc;JapaneseInput</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryUrl>https://github.com/esnya/ResoniteMozcInputMod</RepositoryUrl>
+    <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <AssemblyName Condition="'$(AssemblyName)'==''">MozcInput</AssemblyName>
+    <AssemblyTitle Condition="'$(AssemblyTitle)'==''">Mozc Input</AssemblyTitle>
+    <Product Condition="'$(Product)'==''">$(AssemblyName)</Product>
+    <RootNamespace Condition="'$(RootNamespace)'==''">$(AssemblyName)</RootNamespace>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IsTestProject Condition="'$(IsTestProject)'==''">false</IsTestProject>
+    <EnableResoniteReferences Condition="'$(EnableResoniteReferences)'==''">true</EnableResoniteReferences>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$([System.String]::Copy('$(MSBuildProjectName)').EndsWith('.Tests'))">
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>10-all</AnalysisLevel>
+    <WarningLevel>9999</WarningLevel>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>NU1701</WarningsNotAsErrors>
+    <DebugType Condition="'$(Configuration)'=='Debug'">embedded</DebugType>
+    <DebugType Condition="'$(Configuration)'=='Release'">pdbonly</DebugType>
+    <Optimize Condition="'$(Configuration)'=='Release'">true</Optimize>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(IsTestProject)'=='true'">
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <NoWarn>$(NoWarn);CA1515</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <CopyToMods Condition="'$(CopyToMods)'==''">false</CopyToMods>
+    <EnableHotReloadLibs Condition="'$(EnableHotReloadLibs)'==''">false</EnableHotReloadLibs>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(EnableHotReloadLibs)'=='true'">
+    <DefineConstants>$(DefineConstants);USE_RESONITE_HOT_RELOAD_LIB</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(ResonitePath)'==''">
+    <ResonitePath>$(MSBuildThisFileDirectory)Resonite\</ResonitePath>
+    <ResonitePath Condition="Exists('C:\Program Files (x86)\Steam\steamapps\common\Resonite\')">C:\Program Files (x86)\Steam\steamapps\common\Resonite\</ResonitePath>
+    <ResonitePath Condition="Exists('C:\Program Files\Steam\steamapps\common\Resonite\')">C:\Program Files\Steam\steamapps\common\Resonite\</ResonitePath>
+    <ResonitePath Condition="Exists('$(USERPROFILE)\.steam\steam\steamapps\common\Resonite\')">$(USERPROFILE)\.steam\steam\steamapps\common\Resonite\</ResonitePath>
+    <ResonitePath Condition="Exists('$(HOME)/.steam/steam/steamapps/common/Resonite/')">$(HOME)/.steam/steam/steamapps/common/Resonite/</ResonitePath>
+    <ResonitePath Condition="Exists('$(HOME)/.local/share/Steam/steamapps/common/Resonite/')">$(HOME)/.local/share/Steam/steamapps/common/Resonite/</ResonitePath>
+    <ResonitePath Condition="Exists('/mnt/c/Program Files (x86)/Steam/steamapps/common/Resonite/')">/mnt/c/Program Files (x86)/Steam/steamapps/common/Resonite/</ResonitePath>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <ResolvedResonitePath>$([MSBuild]::EnsureTrailingSlash($([System.IO.Path]::GetFullPath('$(ResonitePath)'))))</ResolvedResonitePath>
+    <ResoniteLibrariesDir>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'Libraries'))</ResoniteLibrariesDir>
+    <ResoniteLibsDir>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'rml_libs'))</ResoniteLibsDir>
+    <ResoniteModsDir>$([System.IO.Path]::Combine('$(ResolvedResonitePath)', 'rml_mods'))</ResoniteModsDir>
+    <ResoniteHotReloadModsDir>$([System.IO.Path]::Combine('$(ResoniteModsDir)', 'HotReloadMods'))</ResoniteHotReloadModsDir>
+    <FrooxEnginePresent Condition="Exists('$(ResolvedResonitePath)FrooxEngine.dll')">true</FrooxEnginePresent>
+    <FrooxEnginePresent Condition="'$(FrooxEnginePresent)'==''">false</FrooxEnginePresent>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(EnableResoniteReferences)'=='true' and '$(FrooxEnginePresent)'=='true'">
+    <Reference Include="ResoniteModLoader">
+      <HintPath>$(ResoniteLibrariesDir)\ResoniteModLoader.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="HarmonyLib">
+      <HintPath>$(ResoniteLibsDir)\0Harmony.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="FrooxEngine">
+      <HintPath>$(ResolvedResonitePath)FrooxEngine.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="Elements.Core">
+      <HintPath>$(ResolvedResonitePath)Elements.Core.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="Renderite.Shared">
+      <HintPath>$(ResolvedResonitePath)Renderite.Shared.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="ResoniteHotReloadLib" Condition="'$(EnableHotReloadLibs)'=='true'">
+      <HintPath>$(ResoniteLibsDir)\ResoniteHotReloadLib.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="ResoniteHotReloadLibCore" Condition="'$(EnableHotReloadLibs)'=='true'">
+      <HintPath>$(ResoniteLibsDir)\ResoniteHotReloadLibCore.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(EnableResoniteReferences)'=='true' and '$(FrooxEnginePresent)'!='true'">
+    <Reference Include="ResoniteModLoader">
+      <HintPath>$(MSBuildThisFileDirectory)Resonite\ResoniteModLoader.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="HarmonyLib">
+      <HintPath>$(MSBuildThisFileDirectory)Resonite\0Harmony.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="ResoniteHotReloadLib" Condition="'$(EnableHotReloadLibs)'=='true'">
+      <HintPath>$(MSBuildThisFileDirectory)Resonite\ResoniteHotReloadLib.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="ResoniteHotReloadLibCore" Condition="'$(EnableHotReloadLibs)'=='true'">
+      <HintPath>$(MSBuildThisFileDirectory)Resonite\ResoniteHotReloadLibCore.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(EnableResoniteReferences)'=='true' and '$(IsTestProject)'=='true' and '$(FrooxEnginePresent)'!='true'">
+    <ContentWithTargetPath Include="$(PkgResonite_GameLibs)\ref\net9.0\*.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(EnableResoniteReferences)'=='true' and '$(IsTestProject)'=='true' and '$(FrooxEnginePresent)'=='true'">
+    <ContentWithTargetPath Include="$(ResolvedResonitePath)FrooxEngine.dll;$(ResolvedResonitePath)Elements.Core.dll;$(ResolvedResonitePath)Renderite.Shared.dll;$(ResoniteLibsDir)\0Harmony.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <TargetPath>%(Filename)%(Extension)</TargetPath>
+    </ContentWithTargetPath>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MinVer" PrivateAssets="all" />
+    <PackageReference Include="Resonite.GameLibs" GeneratePathProperty="true" Condition="'$(EnableResoniteReferences)'=='true'" />
+    <EditorConfigFiles Remove="$(MSBuildProjectDirectory)**\*.editorconfig" />
+    <None Include="$(MSBuildThisFileDirectory)README.md" Link="README.md" Condition="Exists('$(MSBuildThisFileDirectory)README.md')" />
+    <None Include="$(MSBuildThisFileDirectory)LICENSE" Link="LICENSE" Condition="Exists('$(MSBuildThisFileDirectory)LICENSE')" />
+    <None Include="$(MSBuildThisFileDirectory).editorconfig" Link=".editorconfig" Condition="Exists('$(MSBuildThisFileDirectory).editorconfig')" />
+    <None Include="$(MSBuildThisFileDirectory).gitignore" Link=".gitignore" Condition="Exists('$(MSBuildThisFileDirectory).gitignore')" />
+    <None Include="$(MSBuildThisFileDirectory).gitattributes" Link=".gitattributes" Condition="Exists('$(MSBuildThisFileDirectory).gitattributes')" />
+  </ItemGroup>
+
+  <Target Name="PopulateModAssemblyMetadata" AfterTargets="MinVer" BeforeTargets="GenerateAssemblyInfo">
+    <ItemGroup>
+      <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+        <_Parameter1>ModVersion</_Parameter1>
+        <_Parameter2>$(Version)</_Parameter2>
+      </AssemblyAttribute>
+    </ItemGroup>
+  </Target>
+</Project>

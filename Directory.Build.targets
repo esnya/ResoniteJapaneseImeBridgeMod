@@ -1,0 +1,39 @@
+<Project>
+  <Target Name="EnsureResoniteReferences" BeforeTargets="ResolveReferences" Condition="'$(EnableResoniteReferences)'=='true'">
+    <Error
+      Condition="'$(FrooxEnginePresent)'!='true' and !Exists('$(MSBuildThisFileDirectory)Resonite\ResoniteModLoader.dll')"
+      Text="Cannot resolve Resonite references. Install Resonite locally or place fallback assemblies under $(MSBuildThisFileDirectory)Resonite\." />
+    <Error
+      Condition="'$(FrooxEnginePresent)'!='true' and !Exists('$(MSBuildThisFileDirectory)Resonite\0Harmony.dll')"
+      Text="Cannot resolve 0Harmony.dll for fallback builds. Place it under $(MSBuildThisFileDirectory)Resonite\." />
+    <Error
+      Condition="'$(EnableHotReloadLibs)'=='true' and '$(FrooxEnginePresent)'!='true' and !Exists('$(MSBuildThisFileDirectory)Resonite\ResoniteHotReloadLib.dll')"
+      Text="EnableHotReloadLibs=true requires ResoniteHotReloadLib.dll under $(MSBuildThisFileDirectory)Resonite\ when no local Resonite install is used." />
+    <Error
+      Condition="'$(EnableHotReloadLibs)'=='true' and '$(FrooxEnginePresent)'!='true' and !Exists('$(MSBuildThisFileDirectory)Resonite\ResoniteHotReloadLibCore.dll')"
+      Text="EnableHotReloadLibs=true requires ResoniteHotReloadLibCore.dll under $(MSBuildThisFileDirectory)Resonite\ when no local Resonite install is used." />
+  </Target>
+
+  <Target Name="CopyModToResonite" AfterTargets="Build" Condition="'$(CopyToMods)'=='true' and '$(IsResoniteModProject)'=='true'">
+    <MakeDir Directories="$(ResoniteModsDir)" />
+    <ItemGroup>
+      <MozcInputModFiles Include="$(TargetPath)" />
+      <MozcInputModFiles Include="@(ReferenceCopyLocalPaths)" />
+      <MozcInputBridgeFiles Include="$(MSBuildThisFileDirectory)tools\MozcInput.Bridge\bin\$(Configuration)\MozcInput.Bridge.*" />
+      <MozcInputBridgeFiles Include="$(MSBuildThisFileDirectory)tools\MozcInput.Bridge\bin\$(Configuration)\MozcInput.Protocol.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(MozcInputModFiles)" DestinationFolder="$(ResoniteModsDir)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" />
+    <Copy SourceFiles="@(MozcInputBridgeFiles)" DestinationFolder="$(ResoniteModsDir)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" />
+  </Target>
+
+  <Target Name="CopyModToHotReloadMods" AfterTargets="Build" Condition="'$(CopyToMods)'=='true' and '$(EnableHotReloadLibs)'=='true' and '$(IsResoniteModProject)'=='true'">
+    <MakeDir Directories="$(ResoniteHotReloadModsDir)" />
+    <ItemGroup>
+      <MozcInputHotReloadFiles Include="$(TargetPath)" />
+      <MozcInputHotReloadFiles Include="@(ReferenceCopyLocalPaths)" />
+      <MozcInputHotReloadFiles Include="$(MSBuildThisFileDirectory)tools\MozcInput.Bridge\bin\$(Configuration)\MozcInput.Bridge.*" />
+      <MozcInputHotReloadFiles Include="$(MSBuildThisFileDirectory)tools\MozcInput.Bridge\bin\$(Configuration)\MozcInput.Protocol.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(MozcInputHotReloadFiles)" DestinationFolder="$(ResoniteHotReloadModsDir)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" />
+  </Target>
+</Project>
