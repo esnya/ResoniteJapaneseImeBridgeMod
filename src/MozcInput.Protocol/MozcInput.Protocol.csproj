@@ -1,8 +1,0 @@
-<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <AssemblyName>MozcInput.Protocol</AssemblyName>
-    <RootNamespace>MozcInput.Protocol</RootNamespace>
-    <AssemblyTitle>Mozc Input Protocol</AssemblyTitle>
-    <EnableResoniteReferences>false</EnableResoniteReferences>
-  </PropertyGroup>
-</Project>

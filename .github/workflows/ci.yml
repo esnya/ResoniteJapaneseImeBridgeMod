@@ -21,7 +21,7 @@ env:
 jobs:
   build:
     permissions:
-      contents: read
+      contents: write
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -43,34 +43,45 @@ jobs:
           curl -sSfL -o Resonite/0Harmony.dll https://github.com/resonite-modding-group/ResoniteModLoader/releases/latest/download/0Harmony.dll
 
       - name: Restore
-        run: dotnet restore ./ResoniteMozcInputMod.slnx
+        run: dotnet restore ./ResoniteJapaneseImeBridgeMod.slnx
 
       - name: Verify formatting
         shell: bash
         run: |
-          dotnet format ./ResoniteMozcInputMod.slnx whitespace --verify-no-changes --no-restore
-          dotnet format ./ResoniteMozcInputMod.slnx style --verify-no-changes --no-restore --severity info
-          dotnet format ./ResoniteMozcInputMod.slnx analyzers --verify-no-changes --no-restore --severity info
+          dotnet format ./ResoniteJapaneseImeBridgeMod.slnx whitespace --verify-no-changes --no-restore
+          dotnet format ./ResoniteJapaneseImeBridgeMod.slnx style --verify-no-changes --no-restore --severity info
+          dotnet format ./ResoniteJapaneseImeBridgeMod.slnx analyzers --verify-no-changes --no-restore --severity info
 
       - name: Build
-        run: dotnet build ./ResoniteMozcInputMod.slnx -c Release --no-restore
+        run: dotnet build ./ResoniteJapaneseImeBridgeMod.slnx -c Release --no-restore
 
       - name: Test
-        run: dotnet test ./ResoniteMozcInputMod.slnx -c Release --no-build --logger "console;verbosity=normal"
+        run: dotnet test ./ResoniteJapaneseImeBridgeMod.slnx -c Release --no-build --logger "console;verbosity=normal"
 
       - name: Pack artifact
         if: startsWith(github.ref, 'refs/tags/v')
         shell: bash
         run: |
-          mkdir -p artifacts
-          cp ./src/MozcInput/bin/Release/MozcInput.dll ./artifacts/
-          cp ./tools/MozcInput.Bridge/bin/Release/MozcInput.Bridge.exe ./artifacts/ || true
-          cp ./README.md ./LICENSE ./THIRD_PARTY_NOTICES.md ./artifacts/
+          mkdir -p artifacts/JapaneseImeBridge
+          cp ./src/JapaneseImeBridge/bin/Release/JapaneseImeBridge.dll ./artifacts/JapaneseImeBridge/
+          cp ./README.md ./LICENSE ./artifacts/JapaneseImeBridge/
+          cd artifacts
+          zip -r "JapaneseImeBridge-${GITHUB_REF_NAME}.zip" JapaneseImeBridge
 
       - name: Upload release artifacts
         if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v7
         with:
-          name: MozcInput
-          path: artifacts
+          name: JapaneseImeBridge
+          path: artifacts/JapaneseImeBridge-${{ github.ref_name }}.zip
           if-no-files-found: error
+
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            "artifacts/JapaneseImeBridge-${GITHUB_REF_NAME}.zip" \
+            --title "${GITHUB_REF_NAME}" \
+            --notes "Japanese IME Bridge ${GITHUB_REF_NAME}"

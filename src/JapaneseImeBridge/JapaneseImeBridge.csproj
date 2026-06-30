@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>JapaneseImeBridge</AssemblyName>
+    <RootNamespace>JapaneseImeBridge</RootNamespace>
+    <AssemblyTitle>Japanese IME Bridge</AssemblyTitle>
+    <IsResoniteModProject>true</IsResoniteModProject>
+  </PropertyGroup>
+
+</Project>

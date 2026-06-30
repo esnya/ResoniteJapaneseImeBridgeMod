@@ -3,15 +3,15 @@
     <Authors>esnya</Authors>
     <Company>esnya</Company>
     <Copyright>Copyright (c) 2026 $(Authors)</Copyright>
-    <Description>A ResoniteModLoader mod that routes VR text input through a local Mozc-compatible bridge.</Description>
+    <Description>A ResoniteModLoader mod that routes VR VirtualKeyboard input through a local Japanese IME backend.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageTags>Resonite;Mod;ResoniteModLoader;Mozc;JapaneseInput</PackageTags>
+    <PackageTags>Resonite;Mod;ResoniteModLoader;JapaneseInput;IME</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <RepositoryUrl>https://github.com/esnya/ResoniteMozcInputMod</RepositoryUrl>
+    <RepositoryUrl>https://github.com/esnya/ResoniteJapaneseImeBridgeMod</RepositoryUrl>
     <PackageProjectUrl>$(RepositoryUrl)</PackageProjectUrl>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <AssemblyName Condition="'$(AssemblyName)'==''">MozcInput</AssemblyName>
-    <AssemblyTitle Condition="'$(AssemblyTitle)'==''">Mozc Input</AssemblyTitle>
+    <AssemblyName Condition="'$(AssemblyName)'==''">JapaneseImeBridge</AssemblyName>
+    <AssemblyTitle Condition="'$(AssemblyTitle)'==''">Japanese IME Bridge</AssemblyTitle>
     <Product Condition="'$(Product)'==''">$(AssemblyName)</Product>
     <RootNamespace Condition="'$(RootNamespace)'==''">$(AssemblyName)</RootNamespace>
     <MinVerTagPrefix>v</MinVerTagPrefix>
@@ -122,6 +122,18 @@
     </Reference>
     <Reference Include="HarmonyLib">
       <HintPath>$(MSBuildThisFileDirectory)Resonite\0Harmony.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="FrooxEngine">
+      <HintPath>$(PkgResonite_GameLibs)\ref\net9.0\FrooxEngine.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="Elements.Core">
+      <HintPath>$(PkgResonite_GameLibs)\ref\net9.0\Elements.Core.dll</HintPath>
+      <Private>$(IsTestProject)</Private>
+    </Reference>
+    <Reference Include="Renderite.Shared">
+      <HintPath>$(PkgResonite_GameLibs)\ref\net9.0\Renderite.Shared.dll</HintPath>
       <Private>$(IsTestProject)</Private>
     </Reference>
     <Reference Include="ResoniteHotReloadLib" Condition="'$(EnableHotReloadLibs)'=='true'">

@@ -1,36 +1,42 @@
-# ResoniteMozcInputMod
+# ResoniteJapaneseImeBridgeMod
 
-Mozc Input is an unofficial [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader) mod that routes Resonite VirtualKeyboard input through a local Japanese input bridge.
+Japanese IME Bridge is an unofficial [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader) mod that routes Resonite VirtualKeyboard input through a local Japanese IME backend.
 
-Code identity: `MozcInput`
+Code identity: `JapaneseImeBridge`
 
-## Installation
+## Install
 
 1. Install [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader).
 2. Ensure your Resonite launch options include `-LoadAssembly Libraries/ResoniteModLoader.dll`.
-3. Put `MozcInput.dll` and `MozcInput.Bridge.exe` into `rml_mods`.
+3. Put `JapaneseImeBridge.dll` into `rml_mods`.
    Standard Steam path: `C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods`
-4. Launch Resonite and confirm `Mozc Input` loads in the log.
+4. Install Google Japanese Input locally if you want conversion. The mod does not bundle it.
+5. Launch Resonite and confirm `Japanese IME Bridge` loads in the log.
 
-## Mod Settings
+## Configuration
 
-- `Enabled`: enables VirtualKeyboard input routing. Defaults to `true`.
-- `BridgePath`: path to `MozcInput.Bridge.exe`. Empty means the bridge executable next to `MozcInput.dll`.
-- `AutoStartBridge`: starts the local bridge on demand. Defaults to `true`.
-- `ShowCandidatePanel`: shows preedit and candidate text through the VirtualKeyboard text preview. Defaults to `true`.
-- `DefaultImeActive`: starts each VirtualKeyboard target in Mozc IME mode. Defaults to `true`.
-- `ImeToggleKeyCombos`: semicolon-separated `Renderite.Shared.Key` combos that toggle IME mode. Defaults to `LeftWindows;Alt+BackQuote`.
-- `ImeOnKeyCombos`: semicolon-separated `Renderite.Shared.Key` combos that enable IME mode. Defaults include `Control+CapsLock` and `Alt+CapsLock`.
-- `ImeOffKeyCombos`: semicolon-separated `Renderite.Shared.Key` combos that disable IME mode. Defaults to `Shift+CapsLock`.
-- `ImeToggleTextKeys`, `ImeOnTextKeys`, `ImeOffTextKeys`: fallback virtual key text labels for custom keyboards that do not emit useful `Key` combos. Defaults to `半角/全角;Hankaku/Zenkaku;Kanji`, `Kana`, and `Eisu`.
+- `Enabled`: enables the mod. Defaults to `true`.
+- `GoogleJapaneseInputDirectory`: path to the Google Japanese Input install directory containing `GoogleIMEJaConverter.exe`. Empty uses the standard Windows install path.
+- `ShowCandidatePanel`: displays composition and candidates in `VirtualKeyboard.TextPreview` when available. Defaults to `true`.
+- `DefaultImeActive`: starts each VirtualKeyboard target in Japanese IME mode. Defaults to `true`.
+- `ImeToggleKeyCombos`: semicolon-separated `Renderite.Shared.Key` combos that toggle Japanese IME mode. Defaults include `LeftWindows` and common OS IME-like combinations.
+- `ImeOnKeyCombos` / `ImeOffKeyCombos`: semicolon-separated key combos that force IME on/off.
+- `ImeToggleTextKeys` / `ImeOnTextKeys` / `ImeOffTextKeys`: fallback virtual key text names such as `半角/全角`, `Kana`, and `Eisu`.
 
-## Notes
+## Backend
 
-- This is not an official Google, Mozc, or Google Japanese Input product.
-- The bridge detects `C:\Program Files (x86)\Google\Google Japanese Input` and talks to `GoogleIMEJaConverter.exe` through the local Google Japanese Input session pipe when available. If that runtime is missing or IPC fails, it falls back to a minimal romaji-to-kana engine.
-- Bundled Mozc runtime files, when added under `third_party/mozc/runtime`, must retain the upstream license and notices.
+Japanese IME Bridge does not bundle Mozc or Google Japanese Input.
 
-## Development
+The current backend is experimental and Windows-only. It detects a local Google Japanese Input installation and talks to `GoogleIMEJaConverter.exe` through the local `\\.\pipe\googlejapaneseinput.*.session` pipe using a Mozc-derived command protocol.
+
+This is local IPC, not network communication. This mod is not an official Google, Google Japanese Input, or Mozc product, and the converter pipe is not a public stable API. Google Japanese Input updates may break this backend.
+
+If the converter is missing, unavailable, or stops responding, Japanese IME handling is disabled and VirtualKeyboard input is left in pass-through mode. There is no romaji-kana fallback engine in the public build.
+
+The backend implementation references Mozc command protocol concepts:
+https://github.com/google/mozc/blob/master/src/protocol/commands.proto
+
+## Build
 
 ### Requirements
 
@@ -38,32 +44,30 @@ Code identity: `MozcInput`
 - A Resonite install, or fallback assemblies under `./Resonite`
 - Optional: [ResoniteHotReloadLib](https://github.com/Nytra/ResoniteHotReloadLib)
 
-### Build
+### Build and test
 
-```sh
-dotnet build .\ResoniteMozcInputMod.slnx -c Release -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
+```powershell
+dotnet build .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
 ```
 
-### Test
-
-```sh
-dotnet test .\ResoniteMozcInputMod.slnx -c Release -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
+```powershell
+dotnet test .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
 ```
 
 ### Copy to `rml_mods`
 
-```sh
-dotnet build .\ResoniteMozcInputMod.slnx -c Release -p:CopyToMods=true -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
+```powershell
+dotnet build .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:CopyToMods=true -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
 ```
 
 ### Hot Reload
 
-When built with `EnableHotReloadLibs=true` and `ResoniteHotReloadLib` is present in `rml_libs`, `Mozc Input` registers itself during the initial `rml_mods` load. The hot-reloaded DLL is loaded from `rml_mods\HotReloadMods`.
+When built with `EnableHotReloadLibs=true` and `ResoniteHotReloadLib` is present in `rml_libs`, `Japanese IME Bridge` registers itself during the initial `rml_mods` load. The hot-reloaded DLL is loaded from `rml_mods\HotReloadMods`.
 
-```sh
-dotnet build .\ResoniteMozcInputMod.slnx -c Release -p:EnableHotReloadLibs=true -p:CopyToMods=true -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
+```powershell
+dotnet build .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:EnableHotReloadLibs=true -p:CopyToMods=true -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
 ```
 
 ## License
 
-[MIT](./LICENSE). See [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) for Mozc-related notices.
+[MIT](./LICENSE).

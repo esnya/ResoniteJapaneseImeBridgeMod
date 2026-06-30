@@ -17,23 +17,18 @@
   <Target Name="CopyModToResonite" AfterTargets="Build" Condition="'$(CopyToMods)'=='true' and '$(IsResoniteModProject)'=='true'">
     <MakeDir Directories="$(ResoniteModsDir)" />
     <ItemGroup>
-      <MozcInputModFiles Include="$(TargetPath)" />
-      <MozcInputModFiles Include="@(ReferenceCopyLocalPaths)" />
-      <MozcInputBridgeFiles Include="$(MSBuildThisFileDirectory)tools\MozcInput.Bridge\bin\$(Configuration)\MozcInput.Bridge.*" />
-      <MozcInputBridgeFiles Include="$(MSBuildThisFileDirectory)tools\MozcInput.Bridge\bin\$(Configuration)\MozcInput.Protocol.*" />
+      <JapaneseImeBridgeModFiles Include="$(TargetPath)" />
+      <JapaneseImeBridgeModFiles Include="@(ReferenceCopyLocalPaths)" />
     </ItemGroup>
-    <Copy SourceFiles="@(MozcInputModFiles)" DestinationFolder="$(ResoniteModsDir)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" />
-    <Copy SourceFiles="@(MozcInputBridgeFiles)" DestinationFolder="$(ResoniteModsDir)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" />
+    <Copy SourceFiles="@(JapaneseImeBridgeModFiles)" DestinationFolder="$(ResoniteModsDir)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" />
   </Target>
 
   <Target Name="CopyModToHotReloadMods" AfterTargets="Build" Condition="'$(CopyToMods)'=='true' and '$(EnableHotReloadLibs)'=='true' and '$(IsResoniteModProject)'=='true'">
     <MakeDir Directories="$(ResoniteHotReloadModsDir)" />
     <ItemGroup>
-      <MozcInputHotReloadFiles Include="$(TargetPath)" />
-      <MozcInputHotReloadFiles Include="@(ReferenceCopyLocalPaths)" />
-      <MozcInputHotReloadFiles Include="$(MSBuildThisFileDirectory)tools\MozcInput.Bridge\bin\$(Configuration)\MozcInput.Bridge.*" />
-      <MozcInputHotReloadFiles Include="$(MSBuildThisFileDirectory)tools\MozcInput.Bridge\bin\$(Configuration)\MozcInput.Protocol.*" />
+      <JapaneseImeBridgeHotReloadFiles Include="$(TargetPath)" />
+      <JapaneseImeBridgeHotReloadFiles Include="@(ReferenceCopyLocalPaths)" />
     </ItemGroup>
-    <Copy SourceFiles="@(MozcInputHotReloadFiles)" DestinationFolder="$(ResoniteHotReloadModsDir)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" />
+    <Copy SourceFiles="@(JapaneseImeBridgeHotReloadFiles)" DestinationFolder="$(ResoniteHotReloadModsDir)" SkipUnchangedFiles="true" ContinueOnError="WarnAndContinue" />
   </Target>
 </Project>
