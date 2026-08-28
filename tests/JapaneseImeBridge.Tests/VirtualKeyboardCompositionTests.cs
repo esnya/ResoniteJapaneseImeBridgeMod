@@ -64,6 +64,7 @@ public sealed class VirtualKeyboardCompositionTests
         Assert.Equal(-1, formatted.SelectionStart);
     }
 
+#if !RESONITE_REFERENCE_ASSEMBLIES
     [Fact]
     public void VirtualKeyInputMapsControlKeysBeforeText()
     {
@@ -155,5 +156,6 @@ public sealed class VirtualKeyboardCompositionTests
 
         Assert.Equal(expected, (int)action);
     }
+#endif
 
 }

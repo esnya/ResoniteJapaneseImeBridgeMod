@@ -1,5 +1,4 @@
-using System.Reflection;
-using JapaneseImeBridge;
+using Mono.Cecil;
 
 namespace JapaneseImeBridge.Tests;
 
@@ -8,14 +7,22 @@ public sealed class MetadataTests
     [Fact]
     public void ModMetadataUsesPublicJapaneseImeBridgeIdentity()
     {
-        var assembly = typeof(JapaneseImeBridgeMod).Assembly;
+        using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(GetAssemblyPath());
 
-        Assert.Equal("JapaneseImeBridge", assembly.GetName().Name);
-        Assert.Equal("Japanese IME Bridge", assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title);
-        Assert.Equal("esnya", assembly.GetCustomAttribute<AssemblyCompanyAttribute>()?.Company);
+        Assert.Equal("JapaneseImeBridge", assembly.Name.Name);
         Assert.Contains(
-            assembly.GetCustomAttributes<AssemblyMetadataAttribute>(),
-            metadata => metadata is { Key: "RepositoryUrl", Value: "https://github.com/esnya/ResoniteJapaneseImeBridgeMod" });
+            assembly.CustomAttributes,
+            static attribute => HasSingleValue(attribute, "System.Reflection.AssemblyTitleAttribute", "Japanese IME Bridge"));
+        Assert.Contains(
+            assembly.CustomAttributes,
+            static attribute => HasSingleValue(attribute, "System.Reflection.AssemblyCompanyAttribute", "esnya"));
+        Assert.Contains(
+            assembly.CustomAttributes,
+            static attribute =>
+                attribute.AttributeType.FullName == "System.Reflection.AssemblyMetadataAttribute"
+                && attribute.ConstructorArguments.Count == 2
+                && Equals(attribute.ConstructorArguments[0].Value, "RepositoryUrl")
+                && Equals(attribute.ConstructorArguments[1].Value, "https://github.com/esnya/ResoniteJapaneseImeBridgeMod"));
     }
 
 #if USE_RESONITE_HOT_RELOAD_LIB
@@ -24,9 +31,23 @@ public sealed class MetadataTests
     [InlineData(nameof(JapaneseImeBridgeMod.OnHotReload))]
     public void ModAlwaysExposesHotReloadLifecycleMethods(string methodName)
     {
-        var method = typeof(JapaneseImeBridgeMod).GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
+        using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(GetAssemblyPath());
+        TypeDefinition modType = assembly.MainModule.GetType("JapaneseImeBridge.JapaneseImeBridgeMod")
+            ?? throw new InvalidOperationException("JapaneseImeBridgeMod was not found.");
 
-        Assert.NotNull(method);
+        Assert.Contains(modType.Methods, method => method.IsPublic && method.IsStatic && method.Name == methodName);
     }
 #endif
+
+    private static bool HasSingleValue(CustomAttribute attribute, string attributeType, string value)
+    {
+        return attribute.AttributeType.FullName == attributeType
+            && attribute.ConstructorArguments.Count == 1
+            && Equals(attribute.ConstructorArguments[0].Value, value);
+    }
+
+    private static string GetAssemblyPath()
+    {
+        return Path.Combine(AppContext.BaseDirectory, "JapaneseImeBridge.dll");
+    }
 }

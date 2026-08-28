@@ -84,6 +84,10 @@
     <FrooxEnginePresent Condition="'$(FrooxEnginePresent)'==''">false</FrooxEnginePresent>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(IsTestProject)'=='true' and '$(EnableResoniteReferences)'=='true' and '$(FrooxEnginePresent)'!='true'">
+    <DefineConstants>$(DefineConstants);RESONITE_REFERENCE_ASSEMBLIES</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup Condition="'$(EnableResoniteReferences)'=='true' and '$(FrooxEnginePresent)'=='true'">
     <Reference Include="ResoniteModLoader">
       <HintPath>$(ResoniteLibrariesDir)\ResoniteModLoader.dll</HintPath>
@@ -125,15 +129,15 @@
       <Private>$(IsTestProject)</Private>
     </Reference>
     <Reference Include="FrooxEngine">
-      <HintPath>$(PkgResonite_GameLibs)\ref\net9.0\FrooxEngine.dll</HintPath>
+      <HintPath>$(PkgResonite_GameLibs)\ref\net10.0\FrooxEngine.dll</HintPath>
       <Private>$(IsTestProject)</Private>
     </Reference>
     <Reference Include="Elements.Core">
-      <HintPath>$(PkgResonite_GameLibs)\ref\net9.0\Elements.Core.dll</HintPath>
+      <HintPath>$(PkgResonite_GameLibs)\ref\net10.0\Elements.Core.dll</HintPath>
       <Private>$(IsTestProject)</Private>
     </Reference>
     <Reference Include="Renderite.Shared">
-      <HintPath>$(PkgResonite_GameLibs)\ref\net9.0\Renderite.Shared.dll</HintPath>
+      <HintPath>$(PkgResonite_GameLibs)\ref\net10.0\Renderite.Shared.dll</HintPath>
       <Private>$(IsTestProject)</Private>
     </Reference>
     <Reference Include="ResoniteHotReloadLib" Condition="'$(EnableHotReloadLibs)'=='true'">
@@ -147,7 +151,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(EnableResoniteReferences)'=='true' and '$(IsTestProject)'=='true' and '$(FrooxEnginePresent)'!='true'">
-    <ContentWithTargetPath Include="$(PkgResonite_GameLibs)\ref\net9.0\*.dll">
+    <ContentWithTargetPath Include="$(PkgResonite_GameLibs)\ref\net10.0\*.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <TargetPath>%(Filename)%(Extension)</TargetPath>
     </ContentWithTargetPath>

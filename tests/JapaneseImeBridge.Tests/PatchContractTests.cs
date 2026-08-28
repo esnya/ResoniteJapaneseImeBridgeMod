@@ -1,16 +1,19 @@
-using HarmonyLib;
-using JapaneseImeBridge.Patches;
+using Mono.Cecil;
 
 namespace JapaneseImeBridge.Tests;
 
 public sealed class PatchContractTests
 {
+    private const string HarmonyPatchAttribute = "HarmonyLib.HarmonyPatch";
+
     [Fact]
     public void VirtualKeyPatchTargetsPress()
     {
-        var patch = typeof(VirtualKeyPatch)
-            .GetCustomAttributesData()
-            .Single(attribute => attribute.AttributeType == typeof(HarmonyPatch));
+        using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(GetAssemblyPath());
+        TypeDefinition patchType = GetRequiredType(assembly, "JapaneseImeBridge.Patches.VirtualKeyPatch");
+        CustomAttribute patch = Assert.Single(
+            patchType.CustomAttributes,
+            static attribute => attribute.AttributeType.FullName == HarmonyPatchAttribute);
 
         Assert.Contains(patch.ConstructorArguments, argument => Equals(argument.Value, "Press"));
     }
@@ -18,17 +21,22 @@ public sealed class PatchContractTests
     [Fact]
     public void VirtualKeyboardPatchTargetsOnCommonUpdate()
     {
+        using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(GetAssemblyPath());
+        TypeDefinition patchType = GetRequiredType(assembly, "JapaneseImeBridge.Patches.VirtualKeyboardPatch");
+
         Assert.Contains(
-            typeof(VirtualKeyboardPatch).GetCustomAttributesData(),
-            attribute => attribute.AttributeType == typeof(HarmonyPatch));
+            patchType.CustomAttributes,
+            static attribute => attribute.AttributeType.FullName == HarmonyPatchAttribute);
     }
 
     [Fact]
     public void VirtualMultiKeyPatchTargetsPressed()
     {
-        var patch = typeof(VirtualMultiKeyPatch)
-            .GetCustomAttributesData()
-            .Single(attribute => attribute.AttributeType == typeof(HarmonyPatch));
+        using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(GetAssemblyPath());
+        TypeDefinition patchType = GetRequiredType(assembly, "JapaneseImeBridge.Patches.VirtualMultiKeyPatch");
+        CustomAttribute patch = Assert.Single(
+            patchType.CustomAttributes,
+            static attribute => attribute.AttributeType.FullName == HarmonyPatchAttribute);
 
         Assert.Contains(patch.ConstructorArguments, argument => Equals(argument.Value, "Pressed"));
     }
@@ -38,29 +46,43 @@ public sealed class PatchContractTests
     [InlineData("Defocus")]
     public void TextEditorPatchTargetsFocusLifecycle(string methodName)
     {
+        using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(GetAssemblyPath());
+        TypeDefinition patchType = GetRequiredType(assembly, "JapaneseImeBridge.Patches.TextEditorPatch");
+
         Assert.Contains(
-            typeof(TextEditorPatch).GetMethods(System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static),
+            patchType.Methods,
             method => method
-                .GetCustomAttributesData()
+                .CustomAttributes
                 .Any(attribute =>
-                    attribute.AttributeType == typeof(HarmonyPatch)
+                    attribute.AttributeType.FullName == HarmonyPatchAttribute
                     && attribute.ConstructorArguments.Any(argument => Equals(argument.Value, methodName))));
     }
 
     [Fact]
     public void OldPreeditOverlayManagerIsNotPresent()
     {
-        var assembly = typeof(VirtualKeyPatch).Assembly;
+        using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(GetAssemblyPath());
 
-        Assert.Null(assembly.GetType("JapaneseImeBridge.Rendering.PreeditOverlayManager", throwOnError: false));
+        Assert.Null(assembly.MainModule.GetType("JapaneseImeBridge.Rendering.PreeditOverlayManager"));
     }
 
     [Fact]
     public void ObsoleteBridgeAndFallbackTypesAreNotPresent()
     {
-        var assembly = typeof(VirtualKeyPatch).Assembly;
+        using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(GetAssemblyPath());
 
-        Assert.Null(assembly.GetType("JapaneseImeBridge.Ipc.BridgeClient", throwOnError: false));
-        Assert.Null(assembly.GetType("JapaneseImeBridge.Backend.RomanKanaEngine", throwOnError: false));
+        Assert.Null(assembly.MainModule.GetType("JapaneseImeBridge.Ipc.BridgeClient"));
+        Assert.Null(assembly.MainModule.GetType("JapaneseImeBridge.Backend.RomanKanaEngine"));
+    }
+
+    private static string GetAssemblyPath()
+    {
+        return Path.Combine(AppContext.BaseDirectory, "JapaneseImeBridge.dll");
+    }
+
+    private static TypeDefinition GetRequiredType(AssemblyDefinition assembly, string fullName)
+    {
+        return assembly.MainModule.GetType(fullName)
+            ?? throw new InvalidOperationException($"Required type '{fullName}' was not found in '{assembly.MainModule.FileName}'.");
     }
 }
