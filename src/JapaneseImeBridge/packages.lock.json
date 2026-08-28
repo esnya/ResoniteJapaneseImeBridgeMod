@@ -10,12 +10,9 @@
       },
       "Resonite.GameLibs": {
         "type": "Direct",
-        "requested": "[2026.4.16.1327, )",
-        "resolved": "2026.4.16.1327",
-        "contentHash": "E5ziTxgOKp3bu6tkqtUhKGTCQCTM8dNMCVn1aMmIHM7YcxYw3ls5fBhHpovBcCt5tEuDPrDexbXk3Bupn18+rQ=="
-      },
-      "mozcinput.protocol": {
-        "type": "Project"
+        "requested": "[2026.8.27.1094, )",
+        "resolved": "2026.8.27.1094",
+        "contentHash": "ArwqFi/iLI7TsBBytfTRnYcAq7H0RFAwnCnEbJFmh33kVE14p8XGD8MwW3V7yFl2C9+Mu/5L9b7mYBUxtmRR3A=="
       }
     }
   }

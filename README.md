@@ -8,7 +8,7 @@ Code identity: `JapaneseImeBridge`
 
 1. Install [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader).
 2. Ensure your Resonite launch options include `-LoadAssembly Libraries/ResoniteModLoader.dll`.
-3. Put `JapaneseImeBridge.dll` into `rml_mods`.
+3. Download [`JapaneseImeBridge.dll`](https://github.com/esnya/ResoniteJapaneseImeBridgeMod/releases/latest/download/JapaneseImeBridge.dll) and put it into `rml_mods`.
    Standard Steam path: `C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods`
 4. Install Google Japanese Input locally if you want conversion. The mod does not bundle it.
 5. Launch Resonite and confirm `Japanese IME Bridge` loads in the log.
@@ -36,6 +36,10 @@ If the converter is missing, unavailable, or stops responding, Japanese IME hand
 The backend implementation references Mozc command protocol concepts:
 https://github.com/google/mozc/blob/master/src/protocol/commands.proto
 
+## Compatibility
+
+Release builds are compiled against the Resonite `2026.8.27.1094` public game assemblies. Google Japanese Input's converter pipe is not a stable public API, so verify conversion again after updating either Resonite or Google Japanese Input.
+
 ## Build
 
 ### Requirements
@@ -54,6 +58,8 @@ dotnet build .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:ResonitePath="C:\
 dotnet test .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
 ```
 
+The fallback `Resonite.GameLibs` package contains reference assemblies only, so CI runs engine-independent logic tests plus static assembly-contract checks. Use an installed Resonite path to additionally run the virtual-key runtime contract suite.
+
 ### Copy to `rml_mods`
 
 ```powershell
@@ -67,6 +73,10 @@ When built with `EnableHotReloadLibs=true` and `ResoniteHotReloadLib` is present
 ```powershell
 dotnet build .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:EnableHotReloadLibs=true -p:CopyToMods=true -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
 ```
+
+## Versioning and Releases
+
+Release versions come from `vX.Y.Z` tags through MinVer. The first public release is `v0.1.0`; pushing that tag runs the build, test, and GitHub Release workflow.
 
 ## License
 

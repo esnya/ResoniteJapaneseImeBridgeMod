@@ -24,11 +24,17 @@
         "resolved": "7.0.0",
         "contentHash": "2lMTCQl5bGP4iv0JNkockPnyllC6eHLz+CoK2ICvalvHod+exXSxueu9hq+zNkU7bZBJf8wMfeRC/Edn8AGmEg=="
       },
+      "Mono.Cecil": {
+        "type": "Direct",
+        "requested": "[0.11.6, )",
+        "resolved": "0.11.6",
+        "contentHash": "f33RkDtZO8VlGXCtmQIviOtxgnUdym9xx/b1p9h91CRGOsJFxCFOFK1FDbVt1OCf1aWwYejUFa2MOQyFWTFjbA=="
+      },
       "Resonite.GameLibs": {
         "type": "Direct",
-        "requested": "[2026.4.16.1327, )",
-        "resolved": "2026.4.16.1327",
-        "contentHash": "E5ziTxgOKp3bu6tkqtUhKGTCQCTM8dNMCVn1aMmIHM7YcxYw3ls5fBhHpovBcCt5tEuDPrDexbXk3Bupn18+rQ=="
+        "requested": "[2026.8.27.1094, )",
+        "resolved": "2026.8.27.1094",
+        "contentHash": "ArwqFi/iLI7TsBBytfTRnYcAq7H0RFAwnCnEbJFmh33kVE14p8XGD8MwW3V7yFl2C9+Mu/5L9b7mYBUxtmRR3A=="
       },
       "xunit": {
         "type": "Direct",
@@ -114,7 +120,7 @@
       "japaneseimebridge": {
         "type": "Project",
         "dependencies": {
-          "Resonite.GameLibs": "[2026.4.16.1327, )"
+          "Resonite.GameLibs": "[2026.8.27.1094, )"
         }
       }
     }
