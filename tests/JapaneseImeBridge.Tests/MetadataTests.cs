@@ -25,6 +25,18 @@ public sealed class MetadataTests
                 && Equals(attribute.ConstructorArguments[1].Value, "https://github.com/esnya/ResoniteJapaneseImeBridgeMod"));
     }
 
+    [Fact]
+    public void DefaultConfigurationStartsImeInactive()
+    {
+        using AssemblyDefinition assembly = AssemblyDefinition.ReadAssembly(GetAssemblyPath());
+        TypeDefinition modType = assembly.MainModule.GetType("JapaneseImeBridge.JapaneseImeBridgeMod")
+            ?? throw new InvalidOperationException("JapaneseImeBridgeMod was not found.");
+        FieldDefinition field = Assert.Single(modType.Fields, field => field.Name == "DefaultImeActiveByDefault");
+
+        Assert.True(field.IsLiteral);
+        Assert.False(Assert.IsType<bool>(field.Constant));
+    }
+
 #if USE_RESONITE_HOT_RELOAD_LIB
     [Theory]
     [InlineData(nameof(JapaneseImeBridgeMod.BeforeHotReload))]

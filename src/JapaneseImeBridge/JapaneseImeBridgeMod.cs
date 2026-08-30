@@ -14,6 +14,7 @@ namespace JapaneseImeBridge;
 public sealed class JapaneseImeBridgeMod : ResoniteMod
 {
     private const string ModNamespace = "com.nekometer.esnya";
+    internal const bool DefaultImeActiveByDefault = false;
     private static readonly Assembly Assembly = typeof(JapaneseImeBridgeMod).Assembly;
     private static readonly string HarmonyId = $"{ModNamespace}.{Assembly.GetName().Name}";
     private static readonly Harmony Harmony = new(HarmonyId);
@@ -25,61 +26,61 @@ public sealed class JapaneseImeBridgeMod : ResoniteMod
     [AutoRegisterConfigKey]
     private static readonly ModConfigurationKey<bool> EnabledKey = new(
         "Enabled",
-        "Enable Japanese IME Bridge for focused text editors.",
+        "IMEブリッジを有効にする",
         computeDefault: () => true);
 
     [AutoRegisterConfigKey]
     private static readonly ModConfigurationKey<string> GoogleJapaneseInputDirectoryKey = new(
         "GoogleJapaneseInputDirectory",
-        "Path to the Google Japanese Input install directory containing GoogleIMEJaConverter.exe.",
+        "Google 日本語入力のインストール先",
         computeDefault: static () => string.Empty);
 
     [AutoRegisterConfigKey]
     private static readonly ModConfigurationKey<bool> ShowCandidatePanelKey = new(
         "ShowCandidatePanel",
-        "Show composition and candidate text in the virtual keyboard text preview.",
+        "入力中の文字と変換候補を表示",
         computeDefault: () => true);
 
     [AutoRegisterConfigKey]
     private static readonly ModConfigurationKey<bool> DefaultImeActiveKey = new(
         "DefaultImeActive",
-        "Start each virtual keyboard target with Japanese IME mode active.",
-        computeDefault: () => true);
+        "IMEをオンで開始",
+        computeDefault: () => DefaultImeActiveByDefault);
 
     [AutoRegisterConfigKey]
     private static readonly ModConfigurationKey<string> ImeToggleKeyCombosKey = new(
         "ImeToggleKeyCombos",
-        "Semicolon-separated Renderite.Shared.Key combos that toggle Japanese IME mode.",
+        "IME切替キー",
         computeDefault: () => VirtualImeSwitchMatcher.DefaultToggleKeyCombos);
 
     [AutoRegisterConfigKey]
     private static readonly ModConfigurationKey<string> ImeOnKeyCombosKey = new(
         "ImeOnKeyCombos",
-        "Semicolon-separated Renderite.Shared.Key combos that enable Japanese IME mode.",
+        "IMEオンキー",
         computeDefault: () => VirtualImeSwitchMatcher.DefaultOnKeyCombos);
 
     [AutoRegisterConfigKey]
     private static readonly ModConfigurationKey<string> ImeOffKeyCombosKey = new(
         "ImeOffKeyCombos",
-        "Semicolon-separated Renderite.Shared.Key combos that disable Japanese IME mode.",
+        "IMEオフキー",
         computeDefault: () => VirtualImeSwitchMatcher.DefaultOffKeyCombos);
 
     [AutoRegisterConfigKey]
     private static readonly ModConfigurationKey<string> ImeToggleTextKeysKey = new(
         "ImeToggleTextKeys",
-        "Fallback semicolon-separated virtual key text values that toggle Japanese IME mode.",
+        "IME切替用の仮想キー名",
         computeDefault: () => VirtualImeSwitchMatcher.DefaultToggleTextKeys);
 
     [AutoRegisterConfigKey]
     private static readonly ModConfigurationKey<string> ImeOnTextKeysKey = new(
         "ImeOnTextKeys",
-        "Fallback semicolon-separated virtual key text values that enable Japanese IME mode.",
+        "IMEオン用の仮想キー名",
         computeDefault: () => VirtualImeSwitchMatcher.DefaultOnTextKeys);
 
     [AutoRegisterConfigKey]
     private static readonly ModConfigurationKey<string> ImeOffTextKeysKey = new(
         "ImeOffTextKeys",
-        "Fallback semicolon-separated virtual key text values that disable Japanese IME mode.",
+        "IMEオフ用の仮想キー名",
         computeDefault: () => VirtualImeSwitchMatcher.DefaultOffTextKeys);
 
     /// <inheritdoc />
@@ -117,7 +118,7 @@ public sealed class JapaneseImeBridgeMod : ResoniteMod
             GetConfigValue(EnabledKey, fallback: true),
             GetConfigValue(GoogleJapaneseInputDirectoryKey, fallback: string.Empty),
             GetConfigValue(ShowCandidatePanelKey, fallback: true),
-            GetConfigValue(DefaultImeActiveKey, fallback: true),
+            GetConfigValue(DefaultImeActiveKey, fallback: DefaultImeActiveByDefault),
             GetConfigValue(ImeToggleKeyCombosKey, fallback: VirtualImeSwitchMatcher.DefaultToggleKeyCombos),
             GetConfigValue(ImeOnKeyCombosKey, fallback: VirtualImeSwitchMatcher.DefaultOnKeyCombos),
             GetConfigValue(ImeOffKeyCombosKey, fallback: VirtualImeSwitchMatcher.DefaultOffKeyCombos),

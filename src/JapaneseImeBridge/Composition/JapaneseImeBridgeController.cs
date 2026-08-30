@@ -10,7 +10,7 @@ internal static class JapaneseImeBridgeController
         Enabled: true,
         GoogleJapaneseInputDirectory: string.Empty,
         ShowCandidatePanel: true,
-        DefaultImeActive: true,
+        DefaultImeActive: JapaneseImeBridgeMod.DefaultImeActiveByDefault,
         VirtualImeSwitchMatcher.DefaultToggleKeyCombos,
         VirtualImeSwitchMatcher.DefaultOnKeyCombos,
         VirtualImeSwitchMatcher.DefaultOffKeyCombos,

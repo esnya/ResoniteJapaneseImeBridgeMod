@@ -1,54 +1,53 @@
 # ResoniteJapaneseImeBridgeMod
 
-Japanese IME Bridge is an unofficial [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader) mod that routes Resonite VirtualKeyboard input through a local Japanese IME backend.
+Japanese IME Bridgeは、Resoniteの`VirtualKeyboard`入力をローカルの日本語IMEへ渡す、非公式の[ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader)向けModです。
 
-Code identity: `JapaneseImeBridge`
+コード上の名前は`JapaneseImeBridge`です。
 
-## Install
+## インストール
 
-1. Install [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader).
-2. Ensure your Resonite launch options include `-LoadAssembly Libraries/ResoniteModLoader.dll`.
-3. Download [`JapaneseImeBridge.dll`](https://github.com/esnya/ResoniteJapaneseImeBridgeMod/releases/latest/download/JapaneseImeBridge.dll) and put it into `rml_mods`.
-   Standard Steam path: `C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods`
-4. Install Google Japanese Input locally if you want conversion. The mod does not bundle it.
-5. Launch Resonite and confirm `Japanese IME Bridge` loads in the log.
+1. [ResoniteModLoader](https://github.com/resonite-modding-group/ResoniteModLoader)をインストールします。
+2. Resoniteの起動オプションに`-LoadAssembly Libraries/ResoniteModLoader.dll`を追加します。
+3. 最新リリースの[`JapaneseImeBridge.dll`](https://github.com/esnya/ResoniteJapaneseImeBridgeMod/releases/latest/download/JapaneseImeBridge.dll)をダウンロードし、`rml_mods`に配置します。
+   Steam版の標準パスは`C:\Program Files (x86)\Steam\steamapps\common\Resonite\rml_mods`です。
+4. 変換機能を使う場合は、Google 日本語入力を別途インストールします。このModには同梱されていません。
+5. Resoniteを起動し、ログで`Japanese IME Bridge`が読み込まれたことを確認します。
 
-## Configuration
+## 設定
 
-- `Enabled`: enables the mod. Defaults to `true`.
-- `GoogleJapaneseInputDirectory`: path to the Google Japanese Input install directory containing `GoogleIMEJaConverter.exe`. Empty uses the standard Windows install path.
-- `ShowCandidatePanel`: displays composition and candidates in `VirtualKeyboard.TextPreview` when available. Defaults to `true`.
-- `DefaultImeActive`: starts each VirtualKeyboard target in Japanese IME mode. Defaults to `true`.
-- `ImeToggleKeyCombos`: semicolon-separated `Renderite.Shared.Key` combos that toggle Japanese IME mode. Defaults include `LeftWindows` and common OS IME-like combinations.
-- `ImeOnKeyCombos` / `ImeOffKeyCombos`: semicolon-separated key combos that force IME on/off.
-- `ImeToggleTextKeys` / `ImeOnTextKeys` / `ImeOffTextKeys`: fallback virtual key text names such as `半角/全角`, `Kana`, and `Eisu`.
+- `Enabled`: IMEブリッジを有効にします。既定値は`true`です。
+- `GoogleJapaneseInputDirectory`: `GoogleIMEJaConverter.exe`があるGoogle 日本語入力のインストール先です。空欄では標準のインストール先を使います。
+- `ShowCandidatePanel`: 利用できる場合は、入力中の文字と変換候補を`VirtualKeyboard.TextPreview`に表示します。既定値は`true`です。
+- `DefaultImeActive`: 仮想キーボードごとにIMEをオンで開始するかを指定します。既定値は`false`です。
+- `ImeToggleKeyCombos`: IMEを切り替える`Renderite.Shared.Key`の組み合わせです。複数指定は`;`で区切ります。既定値には`LeftWindows`などの一般的なIME切替操作が含まれます。
+- `ImeOnKeyCombos` / `ImeOffKeyCombos`: IMEをオン／オフにするキー操作です。複数指定は`;`で区切ります。
+- `ImeToggleTextKeys` / `ImeOnTextKeys` / `ImeOffTextKeys`: キー操作に一致しない場合に、IMEの切替／オン／オフを判定する仮想キー文字列です。`半角/全角`、`Kana`、`Eisu`などを`;`で区切ります。
 
-## Backend
+## バックエンド
 
-Japanese IME Bridge does not bundle Mozc or Google Japanese Input.
+Japanese IME Bridgeには、MozcやGoogle 日本語入力を同梱していません。
 
-The current backend is experimental and Windows-only. It detects a local Google Japanese Input installation and talks to `GoogleIMEJaConverter.exe` through the local `\\.\pipe\googlejapaneseinput.*.session` pipe using a Mozc-derived command protocol.
+現在のバックエンドは実験的なWindows専用機能です。ローカルのGoogle 日本語入力を検出し、Mozc由来のコマンドプロトコルを使って、名前付きパイプ`\\.\pipe\googlejapaneseinput.*.session`経由で`GoogleIMEJaConverter.exe`と通信します。
 
-This is local IPC, not network communication. This mod is not an official Google, Google Japanese Input, or Mozc product, and the converter pipe is not a public stable API. Google Japanese Input updates may break this backend.
+通信はローカルIPCで、ネットワークは使用しません。このModはGoogle、Google 日本語入力、Mozcの公式製品ではありません。また、この名前付きパイプは公開された安定APIではないため、Google 日本語入力の更新により動作しなくなることがあります。
 
-If the converter is missing, unavailable, or stops responding, Japanese IME handling is disabled and VirtualKeyboard input is left in pass-through mode. There is no romaji-kana fallback engine in the public build.
+コンバーターが見つからない、利用できない、または応答しない場合は、IME処理を無効にして`VirtualKeyboard`入力をそのまま通します。公開ビルドにはローマ字からかなへの代替変換機能はありません。
 
-The backend implementation references Mozc command protocol concepts:
-https://github.com/google/mozc/blob/master/src/protocol/commands.proto
+バックエンドの実装は[Mozcのコマンドプロトコル](https://github.com/google/mozc/blob/master/src/protocol/commands.proto)を参照しています。
 
-## Compatibility
+## 互換性
 
-Release builds are compiled against the Resonite `2026.8.27.1094` public game assemblies. Google Japanese Input's converter pipe is not a stable public API, so verify conversion again after updating either Resonite or Google Japanese Input.
+リリースビルドは、Resonite `2026.8.27.1094`の公開ゲームアセンブリを使用してコンパイルしています。Google 日本語入力のコンバーターパイプは公開された安定APIではないため、ResoniteまたはGoogle 日本語入力を更新した後は変換機能を再確認してください。
 
-## Build
+## ビルド
 
-### Requirements
+### 必要なもの
 
-- .NET 10 SDK
-- A Resonite install, or fallback assemblies under `./Resonite`
-- Optional: [ResoniteHotReloadLib](https://github.com/Nytra/ResoniteHotReloadLib)
+- .NET 10 SDKが必要です。
+- Resoniteのインストール先、または`./Resonite`以下の代替アセンブリが必要です。
+- ホットリロードを使う場合は、[ResoniteHotReloadLib](https://github.com/Nytra/ResoniteHotReloadLib)が必要です。
 
-### Build and test
+### ビルドとテスト
 
 ```powershell
 dotnet build .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
@@ -58,26 +57,26 @@ dotnet build .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:ResonitePath="C:\
 dotnet test .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
 ```
 
-The fallback `Resonite.GameLibs` package contains reference assemblies only, so CI runs engine-independent logic tests plus static assembly-contract checks. Use an installed Resonite path to additionally run the virtual-key runtime contract suite.
+フォールバック用の`Resonite.GameLibs`パッケージには参照アセンブリのみが含まれるため、CIではエンジン非依存のロジックテストと静的なアセンブリ契約テストを実行します。仮想キーのランタイム契約テストも実行するには、インストール済みResoniteのパスを指定します。
 
-### Copy to `rml_mods`
+### `rml_mods`へのコピー
 
 ```powershell
 dotnet build .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:CopyToMods=true -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
 ```
 
-### Hot Reload
+### ホットリロード
 
-When built with `EnableHotReloadLibs=true` and `ResoniteHotReloadLib` is present in `rml_libs`, `Japanese IME Bridge` registers itself during the initial `rml_mods` load. The hot-reloaded DLL is loaded from `rml_mods\HotReloadMods`.
+`EnableHotReloadLibs=true`でビルドし、`ResoniteHotReloadLib`が`rml_libs`にある場合は、初回の`rml_mods`読み込み時に`Japanese IME Bridge`を登録します。ホットリロード対象のDLLは`rml_mods\HotReloadMods`から読み込みます。
 
 ```powershell
 dotnet build .\ResoniteJapaneseImeBridgeMod.slnx -c Release -p:EnableHotReloadLibs=true -p:CopyToMods=true -p:ResonitePath="C:\Program Files (x86)\Steam\steamapps\common\Resonite"
 ```
 
-## Versioning and Releases
+## バージョンとリリース
 
-Release versions come from `vX.Y.Z` tags through MinVer. The first public release is `v0.1.0`; pushing that tag runs the build, test, and GitHub Release workflow.
+リリースバージョンは`vX.Y.Z`タグからMinVerが決定します。最初の公開リリースは`v0.1.0`です。このタグをpushすると、ビルド、テスト、GitHub Releaseワークフローが実行されます。
 
-## License
+## ライセンス
 
-[MIT](./LICENSE).
+このModは[MIT License](./LICENSE)で公開しています。
